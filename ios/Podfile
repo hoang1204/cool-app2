@@ -17,12 +17,13 @@ end
 target 'firstapp' do
   config = use_native_modules!
 
+  use_frameworks! :linkage => :static
+  $RNFirebaseAsStaticFramework = true
   use_react_native!(
     :path => config[:reactNativePath],
     # An absolute path to your application root.
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
-
   target 'firstappTests' do
     inherit! :complete
     # Pods for testing
