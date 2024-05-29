@@ -3,6 +3,7 @@ import {storage} from '../core/utils/storage';
 
 const initialState = {
   listCartProduct: [],
+  key: 'null',
 };
 const checkIfItemExists = (list, item) => {
   return list.some(listItem => listItem.id === item.id);
@@ -26,13 +27,13 @@ export const cartSlice = createSlice({
             };
           }))
         : state.listCartProduct.push(action.payload);
-      storage.set('listCartProduct', JSON.stringify(state.listCartProduct));
+      storage.set(state.key, JSON.stringify(state.listCartProduct));
     },
     removeCart: (state, action) => {
       state.listCartProduct = state.listCartProduct.filter(
         item => item.id !== action.payload.id,
       );
-      storage.set('listCartProduct', JSON.stringify(state.listCartProduct));
+      storage.set(state.key, JSON.stringify(state.listCartProduct));
     },
     incrementAmount: (state, action) => {
       state.listCartProduct = state.listCartProduct.map(product => {
@@ -46,7 +47,7 @@ export const cartSlice = createSlice({
           ...product,
         };
       });
-      storage.set('listCartProduct', JSON.stringify(state.listCartProduct));
+      storage.set(state.key, JSON.stringify(state.listCartProduct));
     },
     decrementAmount: (state, action) => {
       state.listCartProduct = state.listCartProduct.map(product => {
@@ -60,15 +61,20 @@ export const cartSlice = createSlice({
           ...product,
         };
       });
-      storage.set('listCartProduct', JSON.stringify(state.listCartProduct));
+      storage.set(state.key, JSON.stringify(state.listCartProduct));
     },
     removeAllCart: (state, action) => {
       state.listCartProduct = [];
-      storage.set('listCartProduct', JSON.stringify(state.listCartProduct));
+      storage.set(state.key, JSON.stringify(state.listCartProduct));
     },
     loadDataLocal: (state, action) => {
-      const jsonListCartProduct = storage.getString('listCartProduct'); // { 'username': 'Marc', 'age': 21 }
-      state.listCartProduct = JSON.parse(jsonListCartProduct);
+      console.log(action.payload);
+      const jsonListCartProduct = storage.getString(action.payload);
+      console.log(jsonListCartProduct);
+      state.key = action.payload;
+      if (jsonListCartProduct != 'null')
+        state.listCartProduct = JSON.parse(jsonListCartProduct);
+      else state.listCartProduct = [];
     },
   },
 });

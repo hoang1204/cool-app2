@@ -13,13 +13,14 @@ import {
 // function MainScreen(props) {
 //     return <Text>This is main Screen</Text>
 // }
-import Icon from 'react-native-vector-icons/MaterialIcons';
 import {logo} from '../../core/assets';
-import {NavigationContainer} from '@react-navigation/native';
-import {createNativeStackNavigator} from '@react-navigation/native-stack';
+
 import {useDispatch, useSelector} from 'react-redux';
 import {fetchUserAPI, userSlice} from '../../controller/userSlice';
 import {storage} from '../../core/utils/storage';
+import {loginUser, saveUserInfo} from '../../controller/authenSlice';
+import auth from '@react-native-firebase/auth';
+import {loadDataLocal} from '../../controller/cartSlice';
 //create a variable which reference to a function
 const {width, height} = Dimensions.get('window');
 
@@ -28,10 +29,35 @@ function LoginScreen({navigation}) {
   const [userName, setUserName] = useState('');
   const [userPass, setUserPass] = useState('');
   const [isHidePass, setIsHidePass] = useState(true);
-  const handleLogin = () => {
-    fetch('https://fakestoreapi.com/products')
-      .then(res => res.json())
-      .then(json => console.log(json));
+  const handleLogin = async () => {
+    try {
+      const userInfo = await auth().signInWithEmailAndPassword(
+        userName,
+        userPass,
+      );
+
+      dispatch(saveUserInfo(userInfo));
+      if (storage.getString(userInfo.user.uid) === undefined) {
+        console.log('Đã khởi tạo storage');
+        storage.set(userInfo.user.uid, 'null');
+      } else {
+        console.log('storage' + storage.getString(userInfo.user.uid));
+        dispatch(loadDataLocal(userInfo.user.uid));
+      }
+      Alert.alert('Đăng nhập thành công');
+      navigation.navigate('homePage');
+    } catch (error) {
+      // Xử lý lỗi Firebase
+      var errorMessage;
+      if (error.code === 'auth/invalid-email') {
+        errorMessage = 'Email không hợp lệ';
+      } else if (error.code === 'auth/wrong-password') {
+        errorMessage = 'Sai mật khẩu';
+      } else {
+        errorMessage = error.message;
+      }
+      Alert.alert('Đăng nhập thất bại', errorMessage);
+    }
   };
 
   return (
@@ -77,12 +103,8 @@ function LoginScreen({navigation}) {
         <TouchableOpacity
           style={styles.button}
           onPress={() => {
+            handleLogin();
             dispatch(fetchUserAPI());
-            console.log(storage.getString('listCartProduct'));
-            if (storage.getString('listCartProduct') === undefined) {
-              console.log(storage.getString('listCartProduct'));
-            }
-            navigation.navigate('homePage');
           }}
           activeOpacity={0.5}>
           <Text
@@ -94,7 +116,10 @@ function LoginScreen({navigation}) {
       <View style={{flex: 20, alignItems: 'center'}}>
         <View style={{flexDirection: 'row', marginTop: 30}}>
           <Text style={{fontSize: 18}}>Bạn chưa có tài khoản?</Text>
-          <TouchableOpacity onPress={handleLogin}>
+          <TouchableOpacity
+            onPress={() => {
+              navigation.navigate('registerScreen');
+            }}>
             <Text style={{color: 'red', fontWeight: 'bold', fontSize: 18}}>
               Đăng ký
             </Text>

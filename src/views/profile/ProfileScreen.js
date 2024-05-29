@@ -13,8 +13,11 @@ import {avatar} from '../../core/assets';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import {windowHeight, windowWidth} from '../../core/utils/sizeConfig';
 
-import {useSelector} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
+import {logoutUser} from '../../controller/authenSlice';
+
 function ProfileScreen({navigation}) {
+  const dispatch = useDispatch();
   const isLoading = useSelector(state => state.userReducer.isLoading);
   const userInfo = useSelector(state => state.userReducer.userInfo);
   const menuComponent = (onPress, icon, title, color = 'black') => {
@@ -76,7 +79,10 @@ function ProfileScreen({navigation}) {
             {menuComponent(() => {}, 'user-times', 'Yêu cầu xoá tài khoản')}
             <View style={styles.separator}></View>
             {menuComponent(
-              () => {},
+              () => {
+                dispatch(logoutUser());
+                navigation.popToTop();
+              },
               'sign-out-alt',
               'Đăng xuất tài khoản',
               'red',

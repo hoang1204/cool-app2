@@ -24,7 +24,6 @@ import {
   fetchDataAPI2,
 } from '../../controller/homeSlice';
 import {useDispatch, useSelector} from 'react-redux';
-import {addCart, loadDataLocal} from '../../controller/cartSlice';
 import BannerCarousel from '../../components/BannerSlide';
 import ItemShimmer from './component/shimmerItem';
 import ListVertiCalItem from './component/List_Vertical';
@@ -44,8 +43,6 @@ const HomeScreen = ({navigation}) => {
   useEffect(() => {
     dispatch(fetchDataAPI());
     dispatch(fetchDataAPI2());
-    dispatch(loadDataLocal());
-    console.log('re-render');
   }, [dispatch]);
 
   const renderData = ({item, index}) => {

@@ -13,6 +13,7 @@ import {store} from './ReduxStore';
 import AddressScreen from './views/profile/menuComponent/AddressScreen';
 import UserScreen from './views/profile/menuComponent/UserScreen';
 import CheckoutScreen from './views/cart/CheckoutScreen';
+import RegisterScreen from './views/authen/RegisterScreen';
 
 const Stack = createNativeStackNavigator();
 function App() {
@@ -64,6 +65,11 @@ function App() {
             name="checkoutScreen"
             component={CheckoutScreen}
             options={{title: 'Chi tiết đơn hàng'}}
+          />
+          <Stack.Screen
+            name="registerScreen"
+            component={RegisterScreen}
+            options={{title: 'Đăng ký', headerShown: false}}
           />
         </Stack.Navigator>
       </NavigationContainer>
